@@ -1,0 +1,104 @@
+{% include 'navbar.html' %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Quiz Completed!</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+</head>
+<body class="bg-[#FAF6F0] font-sans text-gray-800 h-screen flex flex-col overflow-hidden">
+
+    <div class="flex flex-1 h-full overflow-hidden">
+
+        {% include 'sidebar.html' %}
+
+        <main class="flex-1 flex items-center justify-center p-10 overflow-y-auto box-border">
+
+            <div class="bg-white rounded-3xl p-10 shadow-md border border-gray-100 max-w-xl w-full text-center relative overflow-hidden">
+
+                <div class="absolute -top-10 -left-10 w-32 h-32 bg-teal-100/40 rounded-full blur-xl pointer-events-none"></div>
+                <div class="absolute -bottom-10 -right-10 w-32 h-32 bg-amber-100/50 rounded-full blur-xl pointer-events-none"></div>
+
+                <div class="inline-flex items-center justify-center w-20 h-20 bg-emerald-50 rounded-full mb-6">
+                    <span class="text-4xl animate-bounce">🎉</span>
+                </div>
+
+                <h1 class="text-3xl font-extrabold text-gray-900 mb-2">Congratulations!</h1>
+                <p class="text-gray-500 font-medium mb-8">You have successfully finished the <span class="text-[#0e6262] font-semibold">"{{ module_title }}"</span> ASL Module.</p>
+
+                <div class="grid grid-cols-3 gap-4 mb-8">
+                    <div class="bg-[#FAF6F0] rounded-2xl p-4 border border-gray-100">
+                        <span class="text-xs font-bold text-gray-400 uppercase tracking-wider block mb-1">Score</span>
+                        <span class="text-2xl font-bold text-gray-800">{{ score_fraction }}</span>
+                    </div>
+
+                    <div class="bg-[#FAF6F0] rounded-2xl p-4 border border-gray-100">
+                        <span class="text-xs font-bold text-gray-400 uppercase tracking-wider block mb-1">Accuracy</span>
+                        <span class="text-2xl font-bold text-emerald-700">{{ accuracy }}%</span>
+                    </div>
+
+                    <div class="bg-amber-50/60 rounded-2xl p-4 border border-amber-100/50">
+                        <span class="text-xs font-bold text-amber-700/70 uppercase tracking-wider block mb-1">Earned</span>
+                        <span class="text-2xl font-bold text-amber-600">+{{ points_earned }} ⭐</span>
+                    </div>
+                </div>
+
+                <p class="text-sm text-gray-600 mb-8 max-w-sm mx-auto">
+                    {% if accuracy|add:"0" >= 80 %}
+                        Excellent work! Your command of these ASL signs is looking incredibly sharp. Keep it up!
+                    {% else %}
+                        Great effort! Practice makes perfect. Review the dictionary cards and try again to hit 100%!
+                    {% endif %}
+                </p>
+
+                <div class="flex flex-col sm:flex-row gap-3 justify-center">
+                    <a href="{% url 'quizzes' %}" class="px-6 py-3 bg-[#0e6262] hover:bg-[#0a4848] text-white font-bold rounded-xl shadow-sm transition-all text-sm tracking-wide">
+                        View All Quizzes
+                    </a>
+                    <a href="/dictionary/" class="px-6 py-3 bg-[#EFE9DB] hover:bg-gray-200 text-gray-700 font-bold rounded-xl transition-all text-sm tracking-wide">
+                        Open Dictionary
+                    </a>
+                </div>
+
+            </div>
+
+        </main>
+
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Get accuracy directly from your Django variable context
+            const accuracy = parseInt("{{ accuracy }}") || 0;
+
+            // If accuracy is good, give them a double side blast!
+            if (accuracy >= 70) {
+                // Left side cannon
+                confetti({
+                    particleCount: 100,
+                    spread: 70,
+                    origin: { x: 0.1, y: 0.6 }
+                });
+
+                // Right side cannon (slightly delayed for better effect)
+                setTimeout(() => {
+                    confetti({
+                        particleCount: 100,
+                        spread: 70,
+                        origin: { x: 0.9, y: 0.6 }
+                    });
+                }, 250);
+            } else {
+                // Standard center pop for finishing the quiz
+                confetti({
+                    particleCount: 50,
+                    spread: 60,
+                    origin: { y: 0.6 }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

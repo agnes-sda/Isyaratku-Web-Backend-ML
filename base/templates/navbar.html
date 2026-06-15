@@ -1,0 +1,207 @@
+<head>
+    <style>
+        /* Base Styling resets */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+
+/* Navbar Container */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #fcf8f2;
+    padding: 10px 40px;
+    border-top: 4px solid #007bff; /* Top blue border line from your design */
+    height: 70px;
+}
+
+/* Left: Brand Logo */
+.navbar-logo a {
+    font-size: 24px;
+    font-weight: bold;
+    color: #0c5a53; /* Deep teal color matching your logo */
+    text-decoration: none;
+}
+
+/* Center: Navigation Menu Links */
+.navbar-links {
+    display: flex;
+    list-style: none;
+    gap: 30px;
+}
+
+.navbar-links a {
+    text-decoration: none;
+    color: #4a4a4a; /* Muted gray text for unselected links */
+    font-size: 16px;
+    font-weight: 500;
+    padding-bottom: 6px;
+    transition: color 0.2s ease;
+}
+
+.navbar-links a:hover {
+    color: #0c5a53;
+}
+
+/* Active Class with Teal Bottom Indicator */
+.navbar-links a.active {
+    color: #0c5a53;
+    font-weight: 600;
+    border-bottom: 3px solid #0c5a53;
+}
+
+/* Right: Action Utilities Block */
+.navbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+/* Rounded Search Input Area */
+.search-box {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.search-box input {
+    background-color: #f5edd8; /* Cream/Tan filled color context */
+    border: none;
+    outline: none;
+    padding: 8px 16px 8px 36px;
+    border-radius: 20px;
+    font-size: 14px;
+    width: 220px;
+    color: #333;
+}
+
+.search-box input::placeholder {
+    color: #8c8573;
+}
+
+.search-icon {
+    position: absolute;
+    left: 12px;
+    font-size: 14px;
+    color: #8c8573;
+    pointer-events: none;
+}
+
+/* Notification Button Layout */
+.icon-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 20px;
+    color: #4a4a4a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px;
+    transition: transform 0.1s ease;
+}
+
+.icon-btn:hover {
+    transform: scale(1.05);
+}
+
+/* Rounded Profile Avatar picture */
+.profile-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 1px solid #ccc;
+    cursor: pointer;
+}
+
+.profile-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+    </style>
+</head>
+<nav class="navbar">
+    <div class="navbar-logo">
+        <a href="#">Isyaratku</a>
+    </div>
+
+    <ul class="navbar-links">
+        <li><a href="/dictionary" class="{% if request.resolver_match.url_name == 'dictionary' %}active{% endif %}">Dictionary</a></li>
+        <li><a href="/quizzes" class="{% if request.resolver_match.url_name == 'quizzes' %}active{% endif %}">Quizzes</a></li>
+        <li><a href="/practice" class="{% if request.resolver_match.url_name == 'practice' %}active{% endif %}">Practice</a></li>
+        <li><a href="/progress" class="{% if request.resolver_match.url_name == 'progress' %}active{% endif %}">Progress</a></li>
+        <li><a href="/community" class="{% if request.resolver_match.url_name == 'community' %}active{% endif %}">Community</a></li>
+    </ul>
+
+    <div class="navbar-actions">
+        <form method="GET" action="{% url "dictionary" %}">
+    <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input type="text" name="search" placeholder="Search signs..." value="{{ request.GET.q }}">
+    </div>
+    </form>
+        <a href="{% url 'setting' %}">
+        <div class="profile-avatar">
+            <img src="{{ request.user.profile.profile_picture.url }}" alt="User Profile">
+        </div>
+
+        </a>
+    </div>
+</nav>
+<script>
+    // GLOBAL TRACKER: Tracks general page visits
+    (function() {
+        const startTime = performance.now();
+        const pageUrl = window.location.pathname;
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        function sendGlobalDuration() {
+            const endTime = performance.now();
+            const durationSeconds = ((endTime - startTime) / 1000).toFixed(2);
+
+            // Ignore quick bounces under 1 second
+            if (parseFloat(durationSeconds) < 1.0) return;
+
+            fetch('/api/track-time/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify({
+                    url: pageUrl,
+                    duration: parseFloat(durationSeconds)
+                }),
+                keepalive: true
+            });
+        }
+
+        // Fire when user closes the tab, changes tabs, or navigates away
+        window.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'hidden') {
+                sendGlobalDuration();
+            }
+        });
+    })();
+</script>

@@ -1,0 +1,12 @@
+.venv/
+venv/
+__pycache__/
+*.pyc
+db.sqlite3
+.idea/
+
+# Block the massive AI model weights
+pythonmodel/model.safetensors
+
+# Block heavy user-uploaded videos/images
+media/

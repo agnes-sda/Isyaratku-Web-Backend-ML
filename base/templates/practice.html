@@ -1,0 +1,140 @@
+{% include 'navbar.html' %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Visual Dictionary</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+
+        /* Layout Structure */
+        .dashboard-container {
+            display: flex;
+            justify-content: center; /* Centers the lab layout horizontally */
+            width: 100%;
+            height: calc(100vh - 70px);
+            background-color: #fcf8f2;
+        }
+
+        .main-content {
+            flex-grow: 1;
+            padding: 40px;
+            overflow-y: auto;
+        }
+
+        /* Lab Area Styling */
+        .lab-area {
+            width: 100%;
+            max-width: 900px; /* Restricts screen width to match your mockup proportions */
+            margin: 0 auto;
+        }
+
+        .camera-box {
+            background: #000;
+            border-radius: 20px;
+            width: 100%;
+            height: 500px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        #webcam {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: #1a1a1a;
+        }
+    </style>
+</head>
+<body class="bg-[#FAF6F0] font-sans text-gray-800 h-screen flex flex-col">
+
+    <div class="dashboard-container" style="padding: 24px;">
+
+        <main class="lab-area">
+            <header>
+                <p style="color:#0c5a53; font-weight:600;">Practice Mode • Unit 4</p>
+                <h1 style="font-size:32px;">Gesture Detection Lab</h1>
+            </header>
+
+            <div class="camera-box" style="height: 500px; background:#000; border-radius:20px; position:relative; margin-top: 16px;">
+                <div id="prediction-box"
+                     style="
+                        position:absolute;
+                        top:20px;
+                        left:20px;
+                        background:white;
+                        padding:12px 20px;
+                        border-radius:12px;
+                        font-size:24px;
+                        font-weight:bold;
+                        z-index:10;">
+                    Waiting...
+                </div>
+                <video id="webcam" autoplay playsinline style="width:100%; height:100%; object-fit:cover; border-radius:20px;"></video>
+            </div>
+        </main>
+
+    </div>
+
+<script>
+// Webcam & Web Socket logic remains unchanged and functional
+async function startWebcam() {
+    const video = document.getElementById('webcam');
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+            video: true,
+            audio: false
+        });
+        video.srcObject = stream;
+    } catch (err) {
+        console.error(err);
+        alert("Camera permission denied.");
+    }
+}
+
+window.onload = startWebcam;
+
+const video = document.getElementById("webcam");
+const canvas = document.createElement("canvas");
+const predictionBox = document.getElementById("prediction-box");
+
+const ws = new WebSocket("ws://127.0.0.1:8001/ws/detect");
+
+ws.onopen = () => {
+    console.log("Connected to FastAPI");
+};
+
+ws.onmessage = (event) => {
+    const result = JSON.parse(event.data);
+    if(result.prediction){
+        predictionBox.innerHTML = `${result.prediction} (${result.confidence})`;
+    }
+};
+
+ws.onerror = (error) => {
+    console.error(error);
+};
+
+setInterval(() => {
+    if (
+        video.readyState === video.HAVE_ENOUGH_DATA &&
+        ws.readyState === WebSocket.OPEN
+    ) {
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        const frame = canvas.toDataURL("image/jpeg", 0.7);
+        ws.send(frame);
+    }
+}, 300);
+</script>
+</body>
+</html>

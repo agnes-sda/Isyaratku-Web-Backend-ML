@@ -1,0 +1,306 @@
+{% include 'navbar.html' %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        .dashboard-container {
+            display: flex;
+            width: 100%;
+            min-height: calc(100vh - 70px);
+            background-color: #fcf8f2;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            box-sizing: border-box;
+        }
+
+        .main-content {
+            flex-grow: 1;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            max-width: 900px;
+            margin: 0 auto;
+            width: calc(100% - 280px);
+            box-sizing: border-box;
+        }
+
+        .content-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .content-header h2 {
+            font-size: 28px;
+            color: #1a1a1a;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .summary-text {
+            color: #666;
+            font-size: 15px;
+            margin: 4px 0 0 0;
+        }
+
+        /* --- HEADER ACTION BUTTON STYLING --- */
+        .btn-header-action {
+            background-color: #0c5a53;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            color: #fff;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 10px rgba(12, 90, 83, 0.15);
+            transition: background 0.2s, transform 0.1s;
+        }
+
+        .btn-header-action:hover {
+            background-color: #083e39;
+            color: #fff;
+        }
+
+        .btn-header-action:active {
+            transform: scale(0.98);
+        }
+
+        /* --- COMMUNITY FEED POSTS --- */
+        .feed-container {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-top: 10px;
+        }
+
+        .post-card {
+            background: #fff;
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.01);
+            border: 1px solid rgba(235, 217, 192, 0.5);
+        }
+
+        .post-meta {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background-color: #e3f2f0;
+            color: #0c5a53;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 16px;
+        }
+
+        .meta-details h4 {
+            margin: 0;
+            font-size: 15px;
+            color: #222;
+            font-weight: 600;
+        }
+
+        .meta-details p {
+            margin: 2px 0 0 0;
+            font-size: 12px;
+            color: #8c8573;
+        }
+
+        .post-title {
+            font-size: 19px;
+            color: #1a1a1a;
+            font-weight: 700;
+            margin: 0 0 8px 0;
+        }
+
+        .post-content {
+            font-size: 15px;
+            color: #4a4a4a;
+            line-height: 1.6;
+            margin: 0 0 16px 0;
+            white-space: pre-line;
+        }
+
+        .post-actions {
+            border-top: 1px solid #fcf8f2;
+            padding-top: 12px;
+            display: flex;
+            gap: 16px;
+        }
+
+        .action-button {
+            background: none;
+            border: none;
+            color: #0c5a53;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .action-button:hover {
+            text-decoration: underline;
+        }
+
+        .btn-teal {
+            background-color: #0c5a53;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            color: #fff;
+            font-size: 14px;
+            transition: background 0.2s, transform 0.1s;
+        }
+
+        .btn-teal:hover {
+            background-color: #083e39;
+        }
+
+        .btn-teal:active {
+            transform: scale(0.97);
+        }
+
+        .comment-form .input-field {
+            flex-grow: 1;
+            margin-bottom: 0;
+            padding: 10px 16px;
+            border: 1px solid #ebd9c0;
+            border-radius: 25px;
+            font-size: 14px;
+            outline: none;
+            background: #fff;
+        }
+
+        .comment-form .input-field:focus {
+            border-color: #0c5a53;
+        }
+    </style>
+</head>
+
+<div class="dashboard-container">
+
+    {% include 'sidebar.html' %}
+
+    <main class="main-content">
+        <header class="content-header">
+            <div>
+                <h2>Community Hub</h2>
+                <p class="summary-text">Connect with fellow learners, ask questions, and share progress updates.</p>
+            </div>
+            <a href="{% url 'community_post_feed' %}" class="btn-header-action" style="text-decoration: none;">
+                ✍️ Create a Post
+            </a>
+        </header>
+
+        <div class="feed-container">
+            {% for post in posts %}
+            <div class="post-card">
+                <div class="post-meta">
+                    <div class="user-avatar" style="overflow: hidden; padding: 0;">
+                        {% if post.user.profile.profile_picture %}
+                            <img src="{{ post.user.profile.profile_picture.url }}" style="width: 100%; height: 100%; object-fit: cover;">
+                        {% else %}
+                            {{ post.user.username|slice:":1"|upper }}
+                        {% endif %}
+                    </div>
+                    <div class="meta-details">
+                        <h4>{{ post.user.username }}</h4>
+                        <p>Posted on {{ post.created_at|date:"M d, Y @ h:i A" }}</p>
+                    </div>
+                </div>
+                <h3 class="post-title">{{ post.title }}</h3>
+
+                {% if post.image %}
+                <div class="post-image-wrapper" style="margin-bottom: 16px;">
+                    <img src="{{ post.image.url }}" alt="Post image" style="width: 100%; border-radius: 12px; display: block; border: 1px solid #ebd9c0;">
+                </div>
+                {% endif %}
+
+                <p class="post-content">{{ post.content }}</p>
+
+                <div class="post-actions">
+                    <button class="action-button" onclick="toggleComments('comments-{{ post.id }}')">
+                        💬 Comments ({{ post.comments.count }})
+                    </button>
+                </div>
+
+                <div id="comments-{{ post.id }}" style="display: none; margin-top: 15px; background-color: #f8f9fa; padding: 16px; border-radius: 16px; border: 1px solid rgba(235, 217, 192, 0.3);">
+
+                    <div id="comment-list-{{ post.id }}" style="display: flex; flex-direction: column; gap: 8px;">
+                    {% for comment in post.comments.all %}
+                        <div style="font-size: 14px; background-color: #ffffff; padding: 12px 16px; border-radius: 12px; border: 1px solid #f1eade; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+                            <strong style="color: #000000;">{{ comment.user.username }}</strong>: <span style="color: #000000;">{{ comment.content }}</span>
+                        </div>
+                    {% endfor %}
+                    </div>
+
+                    <form method="POST" class="comment-form" style="display: flex; gap: 8px; margin-top: 12px;">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="create_comment">
+                        <input type="hidden" name="post_id" value="{{ post.id }}">
+
+                        <input type="text" name="comment_content" class="input-field" placeholder="Write a comment..." required>
+
+                        <button type="submit" class="btn-teal" style="padding: 0 20px; white-space: nowrap; height: 42px;">Reply</button>
+                    </form>
+                </div>
+            </div>
+            {% empty %}
+            {% endfor %}
+        </div>
+    </main>
+</div>
+
+<script>
+    function toggleComments(id) {
+        var element = document.getElementById(id);
+        element.style.display = (element.style.display === "none") ? "block" : "none";
+    }
+
+    document.querySelectorAll('.comment-form').forEach(form => {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            const postId = formData.get('post_id');
+
+            fetch("{% url 'community' %}", {
+                method: 'POST',
+                body: formData,
+                headers: {'X-Requested-With': 'XMLHttpRequest'}
+            })
+            .then(response => response.json())
+            .then(data => {
+                const commentList = document.getElementById(`comment-list-${postId}`);
+                const newComment = document.createElement('div');
+
+                newComment.style.fontSize = "14px";
+                newComment.style.backgroundColor = "#ffffff";
+                newComment.style.padding = "12px 16px";
+                newComment.style.borderRadius = "12px";
+                newComment.style.border = "1px solid #f1eade";
+                newComment.style.boxShadow = "0 2px 4px rgba(0,0,0,0.02)";
+
+                // CHANGED: Asynchronous template string modified to style new posts directly with pure black (#000000)
+                newComment.innerHTML = `<strong style="color: #000000;">${data.username}</strong>: <span style="color: #000000;">${data.content}</span>`;
+                commentList.appendChild(newComment);
+                this.reset();
+            });
+        });
+    });
+</script>

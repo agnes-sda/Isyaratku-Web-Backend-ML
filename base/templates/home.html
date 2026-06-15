@@ -1,0 +1,82 @@
+{% include 'navbar.html' %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Visual Dictionary</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-[#FAF6F0] font-sans text-gray-800 h-screen flex flex-col overflow-hidden">
+
+    <div class="flex flex-1 h-full overflow-hidden">
+
+        {% include 'sidebar.html' %}
+
+        <main class="flex-1 p-10 overflow-y-auto max-w-[1400px] ml-0 mr-auto w-full box-border">
+            <h1 class="text-3xl font-bold mb-6 text-gray-900">Visual Dictionary</h1>
+
+            <form method="GET" class="mb-6 max-w-xl">
+                <div class="relative">
+                    <input type="text" name="search" value="{{ search_query }}" placeholder="Search for a sign (e.g., 'Hello', 'Thank You')..."
+                           class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-600 bg-white">
+                    <span class="absolute left-3 top-3.5 text-gray-400">🔍</span>
+                </div>
+            </form>
+
+            <div class="flex flex-wrap gap-1.5 mb-6">
+                <a href="?letter=All" class="px-3 py-1.5 rounded-lg text-sm font-medium {% if selected_letter == 'All' %}bg-emerald-800 text-white{% else %}bg-white border border-gray-200 hover:bg-gray-50{% endif %}">All</a>
+                {% for letter in alphabet %}
+                    <a href="?letter={{ letter }}" class="px-3 py-1.5 rounded-lg text-sm font-medium {% if selected_letter == letter %}bg-emerald-800 text-white{% else %}bg-white border border-gray-200 hover:bg-gray-50{% endif %}">
+                        {{ letter }}
+                    </a>
+                {% endfor %}
+            </div>
+
+            <div class="flex flex-wrap gap-2 mb-8">
+                <a href="?category=Common Words" class="px-4 py-2 rounded-full text-sm font-medium {% if selected_category == 'Common Words' %}bg-[#3D5A5A] text-white{% else %}bg-[#EFE9DB] text-gray-700 hover:bg-gray-200{% endif %}">
+                    ✓ Common Words
+                </a>
+                {% for cat in categories %}
+                    <a href="?category={{ cat.slug }}" class="px-4 py-2 rounded-full text-sm font-medium {% if selected_category == cat.slug %}bg-[#3D5A5A] text-white{% else %}bg-[#EFE9DB] text-gray-700 hover:bg-gray-200{% endif %}">
+                        {{ cat.name }}
+                    </a>
+                {% endfor %}
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                {% for word in words %}
+                <div class="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 flex flex-col justify-between group transition-all duration-300 hover:shadow-md">
+
+                    <div class="relative aspect-video bg-gray-50 overflow-hidden">
+                        <img src="{{ word.thumbnail.url }}" alt="{{ word.title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+
+                        <a href="{% url 'video_watcher' word.id %}" class="absolute inset-0 flex items-center justify-center bg-black/5 opacity-90 group-hover:bg-black/20 transition-colors duration-300">
+                            <span class="w-12 h-12 bg-[#0E6262] text-white rounded-full flex items-center justify-center text-sm pl-0.5 shadow-md transform transition-transform duration-300 group-hover:scale-110">
+                                ▶
+                            </span>
+                        </a>
+
+                        <span class="absolute bottom-3 right-3 text-[10px] tracking-wider font-bold text-white bg-black/60 backdrop-blur-sm px-2 py-0.5 rounded uppercase pointer-events-none">
+                            {{ word.get_difficulty_display|default:"Beginner" }}
+                        </span>
+                    </div>
+
+                    <div class="p-4 flex items-center justify-between bg-white border-t border-gray-50">
+                        <h4 class="font-semibold text-gray-800 text-base">{{ word.title|default:"Hello" }}</h4>
+
+                        <button @click="toggleBookmark(word)" class="text-xl opacity-70 hover:opacity-100 transition-opacity duration-200" title="Bookmark sign">
+
+                        </button>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-span-full py-12 text-center text-gray-400 font-medium">
+                    No matching signs found. Try another search or filter!
+                </div>
+                {% endfor %}
+            </div>
+        </main>
+
+    </div>
+</body>
+</html>

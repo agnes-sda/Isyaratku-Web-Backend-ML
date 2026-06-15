@@ -1,0 +1,560 @@
+{% include 'navbar.html' %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        /* --- CORE WRAPPER GRID CONFIGURATION --- */
+        .dashboard-container {
+            display: flex;
+            width: 100%;
+            min-height: calc(100vh - 70px);
+            background-color: #fcf8f2;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            box-sizing: border-box;
+        }
+
+        /* --- STABILIZED SIDEBAR STYLING SPECIFICATIONS --- */
+        .sidebar {
+            width: 280px;
+            min-width: 280px;
+            max-width: 280px;
+            background-color: #f7f1e5;
+            padding: 40px 24px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border-right: 1px solid #ebd9c0;
+            box-sizing: border-box;
+        }
+
+        .profile-card {
+            text-align: center;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        .avatar-container {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            overflow: hidden;
+            margin: 0 auto 15px auto;
+            border: 1px solid #ccc;
+            background-color: #fff;
+        }
+
+        .avatar-large {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .profile-card h3 {
+            color: #2c3e50;
+            font-size: 22px;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .profile-card class .subtitle {
+            color: #8c8573;
+            font-size: 14px;
+            margin: 4px 0 0 0;
+        }
+
+        .sidebar-divider {
+            width: 100%;
+            border: 0;
+            border-top: 1px solid #ebd9c0;
+            margin: 20px 0 25px 0;
+        }
+
+        .sidebar-menu {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            flex-grow: 1;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 12px 18px;
+            color: #4a4a4a;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 16px;
+            border-radius: 25px;
+            transition: all 0.2s ease;
+        }
+
+        .menu-item.active {
+            background-color: #d1e7e4;
+            color: #0c5a53;
+            font-weight: 600;
+        }
+
+        .menu-item:hover:not(.active) {
+            background-color: #e2d9c5;
+            color: #0c5a53;
+        }
+
+        .start-lesson-btn {
+            width: 100%;
+            padding: 14px;
+            border-radius: 25px;
+            border: none;
+            background-color: #0c5a53;
+            color: #fff;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(12, 90, 83, 0.2);
+            transition: background 0.2s ease;
+            margin-top: auto;
+        }
+
+        .start-lesson-btn:hover {
+            background-color: #083e39;
+        }
+
+        /* --- MAIN WORKSPACE PANEL STRENGTHENERS --- */
+        .main-content {
+            flex-grow: 1;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            gap: 32px;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: calc(100% - 280px);
+            box-sizing: border-box;
+        }
+
+        .content-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .content-header h2 {
+            font-size: 28px;
+            color: #1a1a1a;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .summary-text {
+            color: #666;
+            font-size: 15px;
+            margin: 4px 0 0 0;
+        }
+
+        /* --- STATS GRID DISPLAY BLOCKS --- */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            width: 100%;
+        }
+
+        .stat-card {
+            background: #fff;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 140px;
+            box-sizing: border-box;
+        }
+
+        .border-teal { border-left: 6px solid #a8dadc; background-color: #fafbfc; }
+        .border-blue { border-left: 6px solid #457b9d; background-color: #fafbfc; }
+        .border-orange { border-left: 6px solid #e63946; background-color: #fafbfc; }
+        .bg-teal { background-color: #0c5a53; color: #fff; }
+
+        .card-header {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 8px;
+        }
+
+        .badge {
+            font-size: 12px;
+            font-weight: 700;
+            color: #457b9d;
+        }
+        .badge-green { color: #2a9d8f; }
+        .badge-orange { color: #e63946; }
+
+        .stat-label {
+            color: #8c8573;
+            font-size: 14px;
+            font-weight: 500;
+            margin: 0;
+        }
+
+        .stat-value {
+            font-size: 34px;
+            font-weight: 700;
+            color: #222;
+            margin: 6px 0 0 0;
+        }
+
+        .sub-label {
+            font-size: 13px;
+            opacity: 0.8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin: 0;
+        }
+
+        .bg-teal h3 {
+            font-size: 22px;
+            font-weight: 700;
+            margin: 4px 0 0 0;
+            color: #fff;
+        }
+
+        .progress-container {
+            background: rgba(255, 255, 255, 0.25);
+            border-radius: 10px;
+            height: 6px;
+            margin: 20px 0 8px 0;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            background: #fff;
+            height: 100%;
+            border-radius: 10px;
+        }
+
+        .progress-percentage {
+            font-size: 13px;
+            opacity: 0.9;
+            text-align: right;
+            display: block;
+        }
+
+        /* --- CHART PLOT LINE LAYOUT FRAME --- */
+        .activity-row {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 24px;
+            width: 100%;
+        }
+
+        .activity-card {
+            background: #fff;
+            border-radius: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+            overflow: hidden;
+        }
+
+        .chart-container {
+            padding: 30px;
+            background-color: #fff8f0;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .chart-header h3 {
+            font-size: 20px;
+            color: #222;
+            margin: 0;
+        }
+
+        .legend-dot {
+            font-size: 14px;
+            color: #666;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .legend-dot::before {
+            content: '';
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            background-color: #0c5a53;
+            border-radius: 50%;
+        }
+
+        /* --- HISTORIC SCORE ENTRIES HISTORY --- */
+        .history-section {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            width: 100%;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .section-header h3 {
+            font-size: 20px;
+            color: #222;
+            margin: 0;
+        }
+
+        .view-all-link {
+            color: #0c5a53;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #fff;
+            padding: 18px 24px;
+            border-radius: 16px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.01);
+            transition: transform 0.15s ease;
+        }
+
+        .history-item:hover {
+            transform: translateY(-2px);
+        }
+
+        .item-left {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .item-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+        }
+
+        .bg-light-teal { background-color: #e3f2f0; }
+
+        .item-left h4 {
+            font-size: 16px;
+            color: #222;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .meta-text {
+            color: #8c8573;
+            font-size: 13px;
+            margin-top: 2px;
+        }
+
+        .item-right {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .score-fraction {
+            font-size: 15px;
+            font-weight: 600;
+            color: #222;
+            text-align: right;
+        }
+
+        .score-percent {
+            color: #8c8573;
+            font-size: 13px;
+            width: 110px;
+            text-align: right;
+        }
+
+        .arrow-icon {
+            color: #bfae96;
+            font-size: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<div class="dashboard-container">
+
+    {% include 'sidebar.html' %}
+
+    <main class="main-content">
+        <header class="content-header">
+            <div>
+                <h2>Learning Progress</h2>
+                <p class="summary-text">Track your time spent and performance scores below.</p>
+            </div>
+        </header>
+
+        <section class="stats-grid">
+            <div class="stat-card border-teal">
+                <div class="card-header"><span class="badge badge-green">Score Bank</span></div>
+                <div>
+                    <p class="stat-label">Total Quiz Score</p>
+                    <p class="stat-value">{{ request.user.profile.score }}</p>
+                </div>
+            </div>
+
+            <div class="stat-card border-blue">
+                <div class="card-header">
+                    <span class="badge {% if lifetime_accuracy >= 80 %}badge-green{% elif lifetime_accuracy < 50 %}badge-orange{% endif %}">
+                        🎯 Target 80%+
+                    </span>
+                </div>
+                <div>
+                    <p class="stat-label">Average Accuracy</p>
+                    <p class="stat-value">{{ lifetime_accuracy }}%</p>
+                </div>
+            </div>
+
+            <div class="stat-card border-orange">
+                <div class="card-header"><span class="badge badge-orange">Hot!</span></div>
+                <div>
+                    <p class="stat-label">Learning Streak</p>
+                    <p class="stat-value">{{ request.user.profile.streak }} Days</p>
+                </div>
+            </div>
+
+            <div class="stat-card bg-teal">
+                <div>
+                    <p class="sub-label">Quizzes Completed</p>
+                    <h3>Total Modules</h3>
+                </div>
+                <div>
+                    <p class="text-2xl font-bold text-white mb-2">{{ total_quizzes }}</p>
+                    <span class="progress-percentage">Attempts logged</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="activity-row">
+            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+            <div class="activity-card chart-container">
+                <div class="chart-header">
+                    <h3 style="font-weight: 700; margin: 0;">Weekly Activity</h3>
+                    <span class="legend-dot">Minutes</span>
+                </div>
+                <div style="position: relative; height: 220px; width: 100%;">
+                    <canvas id="weeklyActivityChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <section class="history-section">
+            <div class="section-header">
+                <h3>Practice History</h3>
+            </div>
+
+            <div class="history-list">
+                {% for sub in submissions|slice:":5" %}
+                <div class="history-item">
+                    <div class="item-left">
+                        <div class="item-icon bg-light-teal">📝</div>
+                        <div>
+                            <h4>{{ sub.module.title }}</h4>
+                            <p class="meta-text">Quiz Attempt • {{ sub.created_at|date:"M d, Y @ h:i A" }}</p>
+                        </div>
+                    </div>
+                    <div class="item-right">
+                        <span class="score-fraction">{{ sub.score_fraction }} Correct</span>
+                        <span class="score-percent" style="font-weight: 700; {% if sub.accuracy_percentage >= 80 %}color: #2a9d8f;{% elif sub.accuracy_percentage < 50 %}color: #e63946;{% endif %}">
+                            Accuracy: {{ sub.accuracy_percentage }}%
+                        </span>
+                        <span class="arrow-icon">›</span>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="bg-white p-8 rounded-2xl text-center text-gray-400 border border-gray-100">
+                    No quiz submisson history logs recorded yet!
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+    </main>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const dailyMinutesData = {{ weekly_minutes|default:"[0, 0, 0, 0, 0, 0, 0]"|safe }};
+        const ctx = document.getElementById('weeklyActivityChart').getContext('2d');
+
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                datasets: [{
+                    label: 'Minutes Spent',
+                    data: dailyMinutesData,
+                    borderColor: '#0c5a53',
+                    backgroundColor: 'rgba(12, 90, 83, 0.05)',
+                    borderWidth: 3,
+                    tension: 0.4,
+                    pointBackgroundColor: '#0c5a53',
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2,
+                    pointRadius: 5,
+                    pointHoverRadius: 7,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) { return ` ${context.parsed.y} mins`; }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: { display: false },
+                        ticks: {
+                            color: '#8c8573',
+                            font: { family: 'sans-serif', size: 13, weight: '500' }
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        border: { dash: [5, 5] },
+                        grid: { color: '#ebd9c0' },
+                        ticks: {
+                            color: '#8c8573',
+                            font: { size: 12 }
+                        }
+                    }
+                }
+            }
+        });
+    });
+</script>

@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Isyaratku - Create Account</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-[#FCF8F2] min-h-screen flex m-0 p-0 overflow-x-hidden">
+
+    <div class="flex w-full min-h-screen flex-col md:flex-row">
+
+        <div class="w-full md:w-1/2 bg-[#00605C] text-white flex flex-col justify-between p-8 md:p-16 relative min-h-[40vh] md:min-h-screen bg-cover bg-center"
+             style="background-image: linear-gradient(to bottom, rgba(0,96,92,0.85), rgba(0,96,92,0.95)), url('https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=800&q=80');">
+
+            <div></div>
+
+            <div class="max-w-md mx-auto md:mx-0 z-10">
+                <p class="tracking-widest text-[11px] font-bold uppercase text-emerald-300 mb-3">Welcome to the community</p>
+                <h1 class="text-4xl md:text-5xl font-extrabold mb-5 tracking-tight">Isyaratku</h1>
+                <p class="text-emerald-100 text-xs md:text-sm leading-relaxed mb-8 opacity-90">
+                    Join thousands of learners in bridge the gap between sound and silence. Start your journey into visual-spatial language with clarity and empathy today.
+                </p>
+
+                <div class="flex items-center space-x-3 mt-4">
+                    <div class="flex -space-x-2">
+                        <img class="w-8 h-8 rounded-full border-2 border-[#00605C] object-cover" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&q=80" alt="User Avatar">
+                        <img class="w-8 h-8 rounded-full border-2 border-[#00605C] object-cover" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=100&q=80" alt="User Avatar">
+                        <img class="w-8 h-8 rounded-full border-2 border-[#00605C] object-cover" src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=100&q=80" alt="User Avatar">
+                    </div>
+                    <span class="text-xs font-medium text-emerald-100">+2k members learning signs</span>
+                </div>
+            </div>
+
+            <div></div>
+        </div>
+
+        <div class="w-full md:w-1/2 bg-[#FCF8F2] flex flex-col justify-center items-center p-8 md:p-16">
+            <div class="w-full max-w-md">
+
+                <h2 class="text-xl font-bold text-gray-900 mb-1">Create Account</h2>
+                <p class="text-xs text-gray-500 mb-8">Empowering visual clarity and empathy for the Deaf community.</p>
+
+                <form method="POST" enctype="multipart/form-data" class="space-y-5">
+                    {% csrf_token %}
+
+                    {% if form.errors %}
+                        <div class="bg-red-50 border border-red-200 text-red-700 p-3 rounded-xl text-xs space-y-1">
+                            {% for field, errors in form.errors.items %}
+                                {% for error in errors %}
+                                    <p class="font-medium"><i class="fa-solid fa-circle-exclamation mr-1"></i> {{ error }}</p>
+                                {% endfor %}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+
+                    <div>
+                        <label class="block text-xs font-bold text-gray-800 mb-2">Username</label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-gray-400 text-sm">
+                                <i class="fa-regular fa-user"></i>
+                            </span>
+                            <input type="text" name="username" required
+                                value="{{ form.username.value|default:'' }}"
+                                class="w-full pl-11 pr-4 py-3 bg-[#FFF9F0] border border-[#EFE5D8] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#00605C] text-gray-800 transition-all placeholder-gray-400"
+                                placeholder="Choose a unique username">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-gray-800 mb-2">Email Address</label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-gray-400 text-sm">
+                                <i class="fa-regular fa-envelope"></i>
+                            </span>
+                            <input type="email" name="email" required
+                                value="{{ form.email.value|default:'' }}"
+                                class="w-full pl-11 pr-4 py-3 bg-[#FFF9F0] border border-[#EFE5D8] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#00605C] text-gray-800 transition-all placeholder-gray-400"
+                                placeholder="email@example.com">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-gray-800 mb-2">Password</label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-gray-400 text-sm">
+                                <i class="fa-solid fa-lock"></i>
+                            </span>
+                            <input type="password" name="password" required id="passwordField"
+                                class="w-full pl-11 pr-11 py-3 bg-[#FFF9F0] border border-[#EFE5D8] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#00605C] text-gray-800 transition-all placeholder-gray-400"
+                                placeholder="••••••••">
+                            <span class="absolute inset-y-0 right-0 flex items-center pr-4 text-gray-400 cursor-pointer text-sm hover:text-gray-600 transition-colors" onclick="togglePasswordVisibility()">
+                                <i class="fa-regular fa-eye" id="passwordToggleIcon"></i>
+                            </span>
+                        </div>
+                        <p class="text-[10px] text-gray-400 mt-1.5">Must be at least 8 characters long.</p>
+                    </div>
+
+
+                    <div class="flex items-start mt-2">
+                        <input type="checkbox" name="agree_to_terms" required id="terms"
+                            class="mt-0.5 h-4 w-4 rounded border-[#EFE5D8] bg-[#FFF9F0] text-[#00605C] focus:ring-[#00605C] cursor-pointer">
+                        <label for="terms" class="ml-2.5 text-xs text-gray-500 leading-tight select-none cursor-pointer">
+                            I agree to the <a href="#" class="text-[#00605C] hover:underline font-semibold">Terms of Service</a> and <a href="#" class="text-[#00605C] hover:underline font-semibold">Privacy Policy</a>.
+                        </label>
+                    </div>
+
+                    <button type="submit"
+                        class="w-full mt-2 bg-[#00605C] text-white py-3 px-4 rounded-xl font-semibold text-sm hover:bg-[#004D49] active:scale-[0.99] transition-all flex items-center justify-center space-x-2 shadow-sm">
+                        <span>Create Account</span>
+                        <i class="fa-solid fa-arrow-right text-xs"></i>
+                    </button>
+                </form>
+
+                <p class="text-center text-xs text-gray-500 mt-8">
+                    Already have an account? <a href="/login" class="text-[#00605C] hover:underline font-bold">Login</a>
+                </p>
+
+                <p class="text-center text-[10px] text-gray-400 mt-12 tracking-wide">
+                    &copy; 2026 Isyaratku. Empowering the Deaf community through visual clarity.
+                </p>
+
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        function togglePasswordVisibility() {
+            const passwordInputField = document.getElementById('passwordField');
+            const toggleIconElement = document.getElementById('passwordToggleIcon');
+
+            if (passwordInputField.type === 'password') {
+                passwordInputField.type = 'text';
+                toggleIconElement.classList.remove('fa-eye');
+                toggleIconElement.classList.add('fa-eye-slash');
+            } else {
+                passwordInputField.type = 'password';
+                toggleIconElement.classList.remove('fa-eye-slash');
+                toggleIconElement.classList.add('fa-eye');
+            }
+        }
+    </script>
+</body>
+</html>

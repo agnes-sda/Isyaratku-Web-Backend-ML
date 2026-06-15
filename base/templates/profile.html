@@ -1,0 +1,138 @@
+{% include 'navbar.html' %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ request.user.username }}'s Profile</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-[#FAF6F0] font-sans text-gray-800 min-h-screen flex flex-col">
+
+    <div class="max-w-4xl mx-auto w-full p-6 mt-6">
+
+        <div class="bg-white rounded-2xl p-6 shadow-sm mb-8 flex items-center gap-4">
+            <div class="w-16 h-16 bg-[#0c5a53] rounded-full flex items-center justify-center text-white text-2xl font-bold overflow-hidden shrink-0">
+                {% if request.user.profile.profile_picture %}
+                    <img src="{{ request.user.profile.profile_picture.url }}" class="w-full h-full object-cover">
+                {% else %}
+                    {{ request.user.username|slice:":1"|upper }}
+                {% endif %}
+            </div>
+            <div>
+                <h1 class="text-2xl font-bold text-gray-900">{{ request.user.username }}</h1>
+                <p class="text-sm text-gray-500">Member since {{ request.user.date_joined|date:"F Y" }}</p>
+            </div>
+        </div>
+
+        <h2 class="text-xl font-bold text-gray-800 mb-4">Your Shared Content Contributions</h2>
+
+        <div class="grid grid-cols-1 gap-6">
+            {% for post in posts %}
+                <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 flex flex-col justify-between">
+                    <div>
+                        <h3 class="font-bold text-lg text-gray-900 mb-2">{{ post.title }}</h3>
+
+                        {% if post.image %}
+                        <div class="mb-4">
+                            <img src="{{ post.image.url }}" alt="Post image" class="max-w-md w-full rounded-xl border border-gray-100">
+                        </div>
+                        {% endif %}
+
+                        <p class="text-gray-600 text-sm mb-4">{{ post.content|default:"No description provided." }}</p>
+                    </div>
+
+                    <div class="flex justify-between items-center pt-3 border-t border-gray-100">
+                        <span class="text-xs text-gray-400">Posted on {{ post.created_at|date:"M d, Y" }}</span>
+
+                        <button type="button"
+                                onclick="toggleComments('comments-{{ post.id }}')"
+                                class="text-sm font-semibold text-[#0c5a53] hover:text-[#083e39] flex items-center gap-1.5 focus:outline-none">
+                            💬 Comments (<span id="comment-count-{{ post.id }}">{{ post.comments.count }}</span>)
+                        </button>
+                    </div>
+
+                    <div id="comments-{{ post.id }}" class="hidden mt-4 pt-4 border-t border-gray-100 bg-gray-50 rounded-xl p-4">
+
+                        <div id="comment-list-{{ post.id }}" class="space-y-2">
+                            {% for comment in post.comments.all %}
+                                <div class="text-sm bg-white p-3 rounded-lg border border-gray-100 shadow-2xs">
+                                    <strong class="text-gray-800">{{ comment.user.username }}</strong>:
+                                    <span class="text-gray-600">{{ comment.content }}</span>
+                                </div>
+                            {% empty %}
+                                {% endfor %}
+                        </div>
+
+                        <form method="POST" class="comment-form mt-4 flex gap-2">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="create_comment">
+                            <input type="hidden" name="post_id" value="{{ post.id }}">
+
+                            <input type="text"
+                                   name="comment_content"
+                                   class="w-full text-sm bg-white border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:border-[#0c5a53]"
+                                   placeholder="Write a comment..."
+                                   required>
+
+                            <button type="submit" class="bg-[#0c5a53] text-white text-xs font-semibold px-4 py-2 rounded-lg hover:bg-[#083e39] whitespace-nowrap">
+                                Reply
+                            </button>
+                        </form>
+                    </div>
+
+                </div>
+            {% empty %}
+                <div class="bg-white rounded-2xl p-12 text-center text-gray-500 shadow-sm border border-dashed border-gray-200">
+                    <p class="mb-3 font-medium text-gray-700">You haven't posted any items yet.</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <script>
+        // 1. Toggles hidden/visible state using Tailwind configurations
+        function toggleComments(id) {
+            const container = document.getElementById(id);
+            if (container) {
+                container.classList.toggle('hidden');
+            }
+        }
+
+        // 2. Event interceptor matching your working Community AJAX engine
+        document.querySelectorAll('.comment-form').forEach(form => {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const formData = new FormData(this);
+                const postId = formData.get('post_id');
+
+                // Using the exact backend processor path assigned to your community loop
+                fetch("{% url 'community' %}", {
+                    method: 'POST',
+                    body: formData,
+                    headers: {'X-Requested-With': 'XMLHttpRequest'}
+                })
+                .then(response => response.json())
+                .then(data => {
+                    const commentList = document.getElementById(`comment-list-${postId}`);
+                    const newComment = document.createElement('div');
+
+                    // Tailwind-styled structural addition matching original elements
+                    newComment.className = "text-sm bg-white p-3 rounded-lg border border-gray-100 shadow-2xs";
+                    newComment.innerHTML = `<strong class="text-gray-800">${data.username}</strong>: <span class="text-gray-600">${data.content}</span>`;
+
+                    commentList.appendChild(newComment);
+                    this.reset();
+
+                    // Optional: Increment visible counter indicator string
+                    const counter = document.getElementById(`comment-count-${postId}`);
+                    if(counter) {
+                        counter.innerText = parseInt(counter.innerText) + 1;
+                    }
+                })
+                .catch(err => console.error("Error processing asynchronous comment submission:", err));
+            });
+        });
+    </script>
+
+</body>
+</html>

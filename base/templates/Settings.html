@@ -1,0 +1,299 @@
+{% include 'navbar.html' %}
+
+<style>
+    /* Global Page Setup */
+    .settings-body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        background-color: #f3f4f6;
+        min-height: 100vh;
+        padding: 3rem 1rem;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        box-sizing: border-box;
+    }
+
+    /* Card Wrapper */
+    .settings-card {
+        max-w: 48rem;
+        width: 100%;
+        background-color: #ffffff;
+        border-radius: 0.75rem;
+        box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+        border: 1px solid #f3f4f6;
+        padding: 2rem;
+        box-sizing: border-box;
+    }
+
+    /* Layout Rows */
+    .profile-header-row {
+        display: flex;
+        flex-direction: row;
+        gap: 1.5rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid #f3f4f6;
+        align-items: flex-start;
+    }
+
+    /* Avatar Elements */
+    .avatar-wrapper {
+        position: relative;
+        width: 6rem;
+        height: 6rem;
+        border-radius: 9999px;
+        overflow: hidden;
+        background-color: #e0e7ff;
+        cursor: pointer;
+        flex-shrink: 0;
+    }
+
+    .avatar-wrapper img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .avatar-overlay {
+        position: absolute;
+        inset: 0;
+        background-color: rgba(0, 0, 0, 0.4);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #ffffff;
+        font-size: 0.75rem;
+        font-weight: 500;
+        opacity: 0;
+        transition: opacity 0.15s ease;
+    }
+
+    .avatar-wrapper:hover .avatar-overlay {
+        opacity: 1;
+    }
+
+    /* Form Fields Grid */
+    .fields-container {
+        flex-1;
+        width: 100%;
+    }
+
+    .fields-container h2 {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #111827;
+        margin: 0 0 1rem 0;
+    }
+
+    .grid-2-col {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 1rem;
+    }
+
+    @media (max-w: 640px) {
+        .profile-header-row { flex-direction: column; align-items: center; }
+        .grid-2-col { grid-template-columns: 1fr; }
+    }
+
+    /* Form Inputs & Labels */
+    .input-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .input-group label {
+        display: block;
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: #6b7280;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 0.25rem;
+    }
+
+    /* Locked Fields UI */
+    .input-disabled {
+        width: 100%;
+        padding: 0.5rem 0.75rem;
+        border: 1px solid #e5e7eb;
+        background-color: #f9fafb;
+        color: #9ca3af;
+        border-radius: 0.5rem;
+        cursor: not-allowed;
+        font-size: 0.875rem;
+        box-sizing: border-box;
+    }
+
+    /* Hidden File Input */
+    .hidden-input {
+        display: none !important;
+    }
+
+    /* Security Section Row */
+    .security-section {
+        padding: 1.5rem 0;
+    }
+
+    .security-section h3 {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: #9ca3af;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin: 0 0 0.75rem 0;
+    }
+
+    .security-box {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1rem;
+        border: 1px solid #e5e7eb;
+        border-radius: 0.75rem;
+        text-decoration: none;
+        transition: background-color 0.15s ease;
+    }
+
+    .security-box:hover {
+        background-color: #f9fafb;
+    }
+
+    .security-box-left {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .security-title {
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: #111827;
+        margin: 0;
+    }
+
+    .security-desc {
+        font-size: 0.75rem;
+        color: #6b7280;
+        margin: 0;
+    }
+
+    /* Footer Buttons */
+/* Layout modification for split footer layout */
+.footer-actions-container {
+    display: flex;
+    justify-content: space-between; /* Pushes logout to left, controls to right */
+    align-items: center;
+    padding-top: 1.5rem;
+    margin-top: 1rem;
+}
+
+.footer-right-controls {
+    display: flex;
+    gap: 0.75rem;
+}
+
+/* Red-accented Logout Styling */
+.btn-logout {
+    border: 1px solid #f3f4f6;
+    background-color: #ffffff;
+    color: #ef4444; /* Clean Red */
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+}
+
+.btn-logout:hover {
+    background-color: #fef2f2;
+    border-color: #fca5a5;
+}
+
+    .btn {
+        padding: 0.5rem 1.25rem;
+        border-radius: 0.5rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.15s ease;
+    }
+
+    .btn-cancel {
+        border: 1px solid #d1d5db;
+        background-color: #ffffff;
+        color: #374151;
+    }
+
+    .btn-cancel:hover {
+        background-color: #f9fafb;
+    }
+
+    .btn-save {
+        border: none;
+        background-color: #064e3b; /* Deep Emerald */
+        color: #ffffff;
+    }
+
+    .btn-save:hover {
+        background-color: #022c22;
+    }
+
+</style>
+
+<!-- Update your HTML layout below to map to these pure CSS classes -->
+<div class="settings-body">
+    <div class="settings-card">
+        <form method="POST" action="" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <div class="profile-header-row">
+                <!-- Avatar Target -->
+                <div class="avatar-wrapper" onclick="document.getElementById('avatar-upload-input').click();">
+                    {% if user.profile.profile_picture %}
+                        <img src="{{ user.profile.profile_picture.url }}" alt="Avatar">
+                    {% else %}
+                        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80" alt="Avatar">
+                    {% endif %}
+                    <div class="avatar-overlay">Change</div>
+                </div>
+
+                <!-- Hidden Django File widget input -->
+                <div class="hidden-input">
+                    {{ form.profile_picture }}
+                </div>
+
+                <div class="fields-container">
+                    <h2>Account Profile</h2>
+                    <div class="grid-2-col">
+                        <div class="input-group">
+                            <label>Username</label>
+                            <!-- Django adds native attributes, adding our class cleanly via widget or manual assignment -->
+                            <input type="text" value="{{ form.username.value|default:user.username }}" class="input-disabled" readonly>
+                        </div>
+                        <div class="input-group">
+                            <label>Email Address</label>
+                            <input type="email" value="{{ form.email.value|default:user.email }}" class="input-disabled" readonly>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Security Option Section -->
+
+            <!-- Buttons Footer Layout -->
+<div class="footer-actions-container">
+    <a href="{% url 'logout' %}" class="btn btn-logout">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="display: inline-block; vertical-align: middle; margin-right: 4px;">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 01-3-3h4a3 3 0 013 3v1"></path>
+        </svg>
+        Logout
+    </a>
+
+    <div class="footer-right-controls">
+        <button type="button" onclick="window.history.back();" class="btn btn-cancel">Cancel</button>
+        <button type="submit" class="btn btn-save">Save Changes</button>
+    </div>
+</div>
+        </form>
+    </div>
+</div>
+    </div>
+</div>

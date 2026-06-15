@@ -1,0 +1,157 @@
+{% include 'navbar.html' %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Quiz: {{ module.title }}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-[#FAF6F0] font-sans text-gray-800 h-screen flex flex-col overflow-hidden">
+
+    <div class="flex flex-1 h-full overflow-hidden">
+
+        {% include 'sidebar.html' %}
+
+        <main class="flex-1 p-10 overflow-y-auto max-w-[1100px] ml-0 mr-auto w-full box-border">
+
+            <div class="mb-8 flex justify-between items-center">
+                <div>
+                    <a href="{% url 'quizzes' %}" class="text-sm font-semibold text-emerald-800 hover:underline mb-1 inline-block">← Back to Quizzes</a>
+                    <h1 class="text-3xl font-bold text-gray-900">{{ module.title }}</h1>
+                </div>
+                <span id="step-counter" class="text-xs uppercase tracking-wider font-bold text-teal-800 bg-teal-100/60 px-3 py-1.5 rounded-full">
+                    Question 1 of {{ questions.count }}
+                </span>
+            </div>
+
+            <form method="POST" id="quiz-form" class="space-y-8 pb-16">
+                {% csrf_token %}
+
+                {% for question in questions %}
+                <div data-question-card="{{ forloop.counter0 }}"
+                     class="{% if not forloop.first %}hidden{% endif %} bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex flex-col md:flex-row gap-6 w-full box-border">
+
+                    <div class="w-full md:w-80 aspect-video md:aspect-square bg-gray-50 rounded-xl overflow-hidden border border-gray-200 flex-shrink-0">
+                        {% if question.sign_video %}
+                            <video class="w-full h-full object-cover" autoplay loop muted playsinline>
+                                <source src="{{ question.sign_video.url }}" type="video/mp4">
+                                Your browser does not support the video tag.
+                            </video>
+                        {% else %}
+                            <div class="w-full h-full flex items-center justify-center text-gray-400 text-sm font-medium">
+                                Missing video file
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="flex-1 flex flex-col justify-center">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">
+                            What word or concept is being signed here?
+                        </h3>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            {% for choice in question.randomized_choices %}
+                                <label class="flex items-center gap-3 p-4 border border-gray-200 rounded-xl cursor-pointer hover:bg-emerald-50/40 hover:border-emerald-300 transition-all duration-200">
+                                    <input type="radio"
+                                           name="question_{{ question.id }}"
+                                           value="{{ choice }}"
+                                           class="w-4 h-4 text-emerald-700 focus:ring-emerald-600"
+                                           required>
+                                    <span class="text-gray-700 font-medium">{{ choice }}</span>
+                                </label>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                </div>
+                {% endfor %}
+
+                <div class="flex justify-between items-center pt-4 border-t border-gray-200/60">
+                    <button type="button" id="prev-btn" class="hidden px-5 py-2.5 bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold rounded-xl text-sm transition-all">
+                        Previous
+                    </button>
+                    <div class="ml-auto">
+                        <button type="button" id="next-btn" class="px-8 py-3.5 bg-[#0e6262] hover:bg-[#0a4848] text-white font-bold rounded-xl shadow-md transition-all text-sm">
+                            Next Question
+                        </button>
+                        <button type="submit" id="submit-btn" class="hidden px-8 py-3.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold rounded-xl shadow-md transition-all text-sm">
+                            Submit My Quiz Answers
+                        </button>
+                    </div>
+                </div>
+            </form>
+
+        </main>
+
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            let currentStep = 0;
+            const cards = document.querySelectorAll("[data-question-card]");
+            const totalSteps = cards.length;
+
+            const prevBtn = document.getElementById("prev-btn");
+            const nextBtn = document.getElementById("next-btn");
+            const submitBtn = document.getElementById("submit-btn");
+            const counterText = document.getElementById("step-counter");
+
+            function updateQuizDisplay() {
+                // 1. Show only the active card, hide others
+                cards.forEach((card, index) => {
+                    if (index === currentStep) {
+                        card.classList.remove("hidden");
+                    } else {
+                        card.classList.add("hidden");
+                    }
+                });
+
+                // 2. Update step badge count tracking text
+                counterText.innerText = `Question ${currentStep + 1} of ${totalSteps}`;
+
+                // 3. Control visibility for the Back/Previous button
+                if (currentStep === 0) {
+                    prevBtn.classList.add("hidden");
+                } else {
+                    prevBtn.classList.remove("hidden");
+                }
+
+                // 4. Toggle between Next and Submit button states at the end of the deck
+                if (currentStep === totalSteps - 1) {
+                    nextBtn.classList.add("hidden");
+                    submitBtn.classList.remove("hidden");
+                } else {
+                    nextBtn.classList.remove("hidden");
+                    submitBtn.classList.add("hidden");
+                }
+            }
+
+            nextBtn.addEventListener("click", function() {
+                // Form validation check: Ensure an option is picked before stepping forward
+                const currentActiveCard = cards[currentStep];
+                const selectedRadio = currentActiveCard.querySelector("input[type='radio']:checked");
+
+                if (!selectedRadio) {
+                    alert("Please select an answer choice before moving forward!");
+                    return;
+                }
+
+                if (currentStep < totalSteps - 1) {
+                    currentStep++;
+                    updateQuizDisplay();
+                }
+            });
+
+            prevBtn.addEventListener("click", function() {
+                if (currentStep > 0) {
+                    currentStep--;
+                    updateQuizDisplay();
+                }
+            });
+
+            // Run right away on page load to properly format Question 1's counter text
+            updateQuizDisplay();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,6 @@
+<form action="{% url 'logout' %}" method="POST" class="inline">
+    {% csrf_token %}
+    <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded">
+        Logout
+    </button>
+</form>

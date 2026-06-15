@@ -1,0 +1,88 @@
+{% include 'navbar.html' %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Quiz Center</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-[#FAF6F0] font-sans text-gray-800 h-screen flex flex-col overflow-hidden">
+
+    <div class="flex flex-1 h-full overflow-hidden">
+
+        {% include 'sidebar.html' %}
+
+        <main class="flex-1 p-10 overflow-y-auto max-w-[1400px] ml-0 mr-auto w-full box-border">
+            <h1 class="text-3xl font-bold mb-6 text-gray-900">Quiz Center</h1>
+
+            <form method="GET" class="mb-6 max-w-xl">
+                <div class="relative">
+                    <input type="text" name="search" value="{{ search_query|default:'' }}" placeholder="Search for a quiz topic (e.g., 'Numbers', 'Greetings')..."
+                           class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-600 bg-white">
+                    <span class="absolute left-3 top-3.5 text-gray-400">🔍</span>
+                </div>
+            </form>
+        <div class="flex flex-wrap gap-2 mb-8">
+    <a href="?category=All" class="px-4 py-2 rounded-full text-sm font-medium {% if selected_category == 'All' or not selected_category %}bg-[#3D5A5A] text-white{% else %}bg-[#EFE9DB] text-gray-700 hover:bg-gray-200{% endif %}">
+        ✓ All Quizzes
+    </a>
+
+    {% for cat in categories %}
+        <a href="?category={{ cat.slug }}" class="px-4 py-2 rounded-full text-sm font-medium {% if selected_category == cat.slug %}bg-[#3D5A5A] text-white{% else %}bg-[#EFE9DB] text-gray-700 hover:bg-gray-200{% endif %}">
+            {{ cat.name }}
+        </a>
+    {% endfor %}
+    </div>
+
+
+
+
+
+
+
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                {% for module in modules %}
+                <div class="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 flex flex-col justify-between group transition-all duration-300 hover:shadow-md">
+
+                    <div class="relative aspect-video bg-gray-50 overflow-hidden">
+                        {% if module.thumbnail %}
+                            <img src="{{ module.thumbnail.url }}" alt="{{ module.title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                        {% else %}
+                            <div class="w-full h-full bg-gradient-to-br from-teal-700/10 to-emerald-700/20 flex items-center justify-center text-[#0E6262] font-bold text-xl">
+                                ASL Quiz
+                            </div>
+                        {% endif %}
+
+                        <a href="{% url 'take_quiz' module.slug %}" class="absolute inset-0 flex items-center justify-center bg-black/5 opacity-90 group-hover:bg-black/20 transition-colors duration-300">
+                            <span class="w-12 h-12 bg-[#0E6262] text-white rounded-full flex items-center justify-center text-xs tracking-wider font-bold shadow-md transform transition-transform duration-300 group-hover:scale-110">
+                                START
+                            </span>
+                        </a>
+
+                        <span class="absolute bottom-3 right-3 text-[10px] tracking-wider font-bold text-white bg-black/60 backdrop-blur-sm px-2 py-0.5 rounded uppercase pointer-events-none">
+                            {{ module.questions.count|default:"5" }} Qs
+                        </span>
+                    </div>
+
+                    <div class="p-4 flex items-center justify-between bg-white border-t border-gray-50">
+                        <h4 class="font-semibold text-gray-800 text-base truncate pr-2" title="{{ module.title }}">
+                            {{ module.title }}
+                        </h4>
+
+                        <span class="text-lg text-amber-400 select-none opacity-80" title="Quiz Mode Available">
+                            ⭐
+                        </span>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-span-full py-12 text-center text-gray-400 font-medium">
+                    No matching quizzes found. Try another search filter variation!
+                </div>
+                {% endfor %}
+            </div>
+        </main>
+
+    </div>
+</body>
+</html>
