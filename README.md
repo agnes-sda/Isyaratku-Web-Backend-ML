@@ -10,4 +10,4 @@ Since this is a full-stack Python Django backend application, it cannot be hoste
 ### 1. Prerequisites & Environment Setup
 Ensure you have Python installed on your system. Open your terminal inside the project root folder (`Isyaratku-Web-Backend-ML-main`) and run the following command to install all mandatory framework modules and libraries:
 ```bash
-pip3 install django tailwindcss Pillow
+pip3 install django tailwindcss Pillow && python3 manage.py runserver
