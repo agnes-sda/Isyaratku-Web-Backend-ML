@@ -1,13 +1,13 @@
 # Software Engineering
 # Isyaratku: Web Application with Integrated Machine Learning Backend
 
-This repository houses the modular backend infrastructure, database connectivity parameters, and algorithmic core framework developed for **"Isyaratku"**, a web application utilizing Computer Vision APIs.
+A robust back-end infrastructure and integrated Machine Learning deployment framework designed for sign language recognition and interactive learning pipelines.
 
-## Tech Stack & Engineering Specifications
-* **Core Framework:** Python & Django Web Framework (Modular Server-Side Logic)
-* **Algorithmic Integration:** Computer Vision (CV) API integration handles machine learning model runtime requests
-* **Development Environment:** Visual Studio Code (VS Code) & Git Version Control
+## How to Run and Preview the Website Locally
 
-## Backend Architecture Highlights
-* **Object-Oriented Logic:** Developed utilizing strict enterprise application structures with highly efficient memory allocation parameters.
-* **Performance Control:** Configured structured code architecture and API request management pathways to guarantee server stability under fast-paced processing limits.
+Since this is a full-stack Python Django backend application, it cannot be hosted statically on GitHub Pages. Follow these quick steps to run and test the complete interactive web application on your local machine:
+
+### 1. Prerequisites & Environment Setup
+Ensure you have Python installed on your system. Open your terminal inside the project root folder (`Isyaratku-Web-Backend-ML-main`) and run the following command to install all mandatory framework modules and libraries:
+```bash
+pip3 install django tailwindcss Pillow
